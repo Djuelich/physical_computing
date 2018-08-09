@@ -14,7 +14,7 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 const int buttonPinLed = 2;
-const int buttonPinServo = 1;
+const int buttonPinServo = 4;
 
 int buttonStateLed = 0; 
 int buttoncurrentLed = 0;
