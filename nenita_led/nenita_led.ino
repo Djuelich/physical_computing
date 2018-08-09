@@ -22,6 +22,7 @@ void loop() {
    //theaterChase(strip.Color(0, 0, 127), 50); // Blue
    //theaterChaseRainbow(500);
    //Strobe(0x00, 0x00, 0xff, 10, 50, 50);
+   rainbowCycleStrobe(0,10,50,50);
 }
 
 void showStrip() {
@@ -162,5 +163,28 @@ void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, in
 
   delay(EndPause);
 
+}
+
+
+
+
+void rainbowCycleStrobe(uint8_t wait,int StrobeCount, int FlashDelay, int EndPause ) {
+  uint16_t i, j;
+  for(int a = 0; a < StrobeCount; a++) {
+  for(j=0; j<256*1; j += 10) { // 1 cycles of all colors on wheel
+    for(i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) &
+255));
+    }
+    strip.show();
+   delay(FlashDelay);
+   setAll(0,0,0);
+
+    showStrip();
+
+    delay(FlashDelay);
+  }
+  delay(EndPause);
+}
 }
 
