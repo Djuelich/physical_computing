@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <Servo.h>
 #define PIN 6
 #define NUM_LEDS 60
 
@@ -12,30 +13,45 @@
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
-const int buttonPin = 2;
+const int buttonPinLed = 2;
+const int buttonPinServo = 1;
 
-int buttonState = 0; 
-int buttoncurrent = 0;
+int buttonStateLed = 0; 
+int buttoncurrentLed = 0;
+
+int buttonStateServo = 0; 
+int buttoncurrentServo = 0;
+
+Servo servoA;
+Servo servoB;
+int pos = 50;
+
 
 void setup() {
   Serial.begin(9600);
   // initialize the button pin as a input:
-  pinMode(buttonPin, INPUT);
+  pinMode(buttonPinLed, INPUT);
+  pinMode(buttonPinServo, INPUT);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
+
+  servoA.attach(9);
+  servoB.attach(10);
+  servoA.write(50);
+  servoB.write(50);
 }
 
 
 void loop() {
   // Get current button state.
-  buttonState = digitalRead(buttonPin);
+  buttonStateLed = digitalRead(buttonPinLed);
 
-  if (buttonState == HIGH) {  
-    buttoncurrent++;
+  if (buttonStateLed == HIGH) {  
+    buttoncurrentLed++;
   }   
 
 
-  switch(buttoncurrent % 2){
+  switch(buttoncurrentLed % 2){
   case 0: 
     FadeInOut(0x00, 0x00, 0xff);    // Blue/breathing
     Serial.println("Fade");
@@ -47,23 +63,66 @@ void loop() {
     break;
   }
 
-/** Testarea, multiple methods not in use. maybe later
+  /** Testarea, multiple methods not in use. maybe later
+   * 
+   * FadeInOut(0x00, 0x00, 0xff); 
+   * Serial.println("pushed");
+   * }
+   * else {
+   * Strobe(0x00, 0x00, 0xff, 10, 50, 50);
+   * Serial.println("not_pushed"); 
+   * }
+   * colorWipe(strip.Color(0, 0, 255), 50); // Blue;
+   * FadeInOut(0x00, 0x00, 0xff);
+   * theaterChase(strip.Color(0, 0, 127), 50); // Blue
+   * theaterChaseRainbow(500);
+   * Strobe(0x00, 0x00, 0xff, 10, 50, 50);
+   * 
+   **/
 
-  FadeInOut(0x00, 0x00, 0xff); 
-   Serial.println("pushed");
-   }
-   else {
-   Strobe(0x00, 0x00, 0xff, 10, 50, 50);
-   Serial.println("not_pushed"); 
-   }
-  colorWipe(strip.Color(0, 0, 255), 50); // Blue;
-  FadeInOut(0x00, 0x00, 0xff);
-  theaterChase(strip.Color(0, 0, 127), 50); // Blue
-  theaterChaseRainbow(500);
-  Strobe(0x00, 0x00, 0xff, 10, 50, 50);
-  
-  **/
-  
+  buttonStateServo = digitalRead(buttonPinServo);
+
+  if (buttonStateServo == HIGH) {  
+    buttoncurrentServo++;
+  }   
+
+
+  switch(buttoncurrentServo % 2){
+  case 0: 
+    for(int pos = 80;pos < 150; pos++)
+    {
+      servoA.write(pos);
+      servoB.write(252 - pos);
+      delay(25);
+    }
+    Serial.println("Up");
+    break;
+  case 1: 
+    for(int pos = 150;pos > 80; pos--)
+    {
+      servoA.write(pos);
+      servoB.write(252 - pos);
+      delay(25);
+
+    }
+    Serial.println("down");
+    break;
+  }
+  /**
+   * for(int pos = 80;pos < 150; pos++)
+   * {
+   * servoA.write(pos);
+   * servoB.write(252 - pos);
+   * delay(25);
+   * }
+   * for(int pos = 150;pos > 80; pos--)
+   * {
+   * servoA.write(pos);
+   * servoB.write(252 - pos);
+   * delay(25);
+   * 
+   * }
+   **/
 }
 
 //method for using Adafruit and FASTLED
@@ -222,17 +281,19 @@ void rainbowCycleStrobe(uint8_t wait,int StrobeCount, int FlashDelay, int EndPau
 }
 
 /**  button test
+ * 
+ * void startShow(int i) {
+ * switch(i % 2){
+ * case 0: //FadeInOut(0x00, 0x00, 0xff);    // Black/off
+ * Serial.println("Fade");
+ * break;
+ * case 1: //Strobe(0x00, 0x00, 0xff, 10, 50, 50);  // Red
+ * Serial.println("Strobe");
+ * break;
+ * 
+ * }
+ * }
+ * 
+ **/
 
-void startShow(int i) {
-  switch(i % 2){
-  case 0: //FadeInOut(0x00, 0x00, 0xff);    // Black/off
-    Serial.println("Fade");
-    break;
-  case 1: //Strobe(0x00, 0x00, 0xff, 10, 50, 50);  // Red
-    Serial.println("Strobe");
-    break;
 
-  }
-}
-
-**/
